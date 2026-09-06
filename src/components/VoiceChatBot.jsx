@@ -3,6 +3,8 @@ import { io } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff } from 'lucide-react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://intern-prototype.onrender.com';
+
 export function VoiceChatBot() {
   const [transcript, setTranscript] = useState('');
   const [botResponse, setBotResponse] = useState('');
@@ -12,7 +14,9 @@ export function VoiceChatBot() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:5000');
+    socketRef.current = io(BACKEND_URL, {
+      transports: ['websocket', 'polling']
+    });
 
     socketRef.current.on('bot reply', (replyText) => {
       setBotResponse(replyText);
@@ -112,11 +116,10 @@ export function VoiceChatBot() {
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             aria-label={isListening ? "Stop listening" : "Start talking"}
-            className={`relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center gap-1.5 transition-colors duration-300 shadow-xl cursor-pointer ${
-              isListening
+            className={`relative z-10 w-24 h-24 sm:w-28 sm:h-28 rounded-full flex flex-col items-center justify-center gap-1.5 transition-colors duration-300 shadow-xl cursor-pointer ${isListening
                 ? 'bg-neutral-100 text-neutral-950'
                 : 'bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-200 hover:text-white'
-            }`}
+              }`}
           >
             {isListening ? (
               <MicOff className="w-6 h-6 animate-pulse" />

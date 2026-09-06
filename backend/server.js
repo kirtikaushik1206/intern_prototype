@@ -1,7 +1,7 @@
 // server.js
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io'); 
+const { Server } = require('socket.io');
 const cors = require('cors');
 require('dotenv').config();
 const { GoogleGenAI } = require('@google/genai');
@@ -13,7 +13,7 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", 
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -23,9 +23,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Models prioritized by quota availability and performance
 const CANDIDATE_MODELS = [
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
   'gemini-flash-lite-latest',
+  'gemini-flash-latest',
   'gemini-2.5-flash'
 ];
 
@@ -139,21 +138,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
     conversationHistories.delete(socket.id);
   });
-});
-
-// REST API endpoint for standard HTTP Gemini chat (without socket.io)
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { message, sessionId = 'default-chat-session' } = req.body;
-    if (!message || !message.trim()) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
-    const reply = await getChefResponse(sessionId, message.trim());
-    return res.json({ reply });
-  } catch (err) {
-    console.error('API chat error:', err);
-    return res.status(500).json({ error: 'Failed to generate response from Gemini' });
-  }
 });
 
 const PORT = process.env.PORT || 5000;

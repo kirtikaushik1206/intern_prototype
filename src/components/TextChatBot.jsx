@@ -3,10 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import { motion } from 'framer-motion';
 import { Send, AlertCircle } from 'lucide-react';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-
-// Initialize Google AI Studio SDK instance
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 const CHEF_SYSTEM_INSTRUCTION = `
 You are Chef Pierre, an elite and passionate master chef with years of executive culinary experience.
@@ -18,9 +15,9 @@ Rules:
 `;
 
 const CANDIDATE_MODELS = [
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash'
+  'gemini-flash-lite-latest',
+  'gemini-flash-latest',
+  'gemini-2.5-flash'
 ];
 
 export function TextChatBot() {
